@@ -20,7 +20,7 @@ router.post("/login", (req, res) => {
 });
 
 // 👉 Create user (Protected)
-router.post("/users", authenticateToken, async (req, res) => {
+router.post("/users", async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
