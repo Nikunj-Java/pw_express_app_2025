@@ -5,9 +5,17 @@ import mongoose from "mongoose";
 import logger from "./logger.js";
 import healthRoutes from "./routes/health.js";
 import userRoutes from "./routes/users.js";
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
+
+//cors
+app.use(cors({
+  origin: ["http://localhost:5137","https://pw-react-app-2025.onrender.com"],
+  methods:["GET","POST","PUT","DELETE"],
+  credentials:true,
+}))
 
 // Middleware
 app.use(helmet());
