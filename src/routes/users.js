@@ -8,17 +8,31 @@ dotenv.config();
 const router = Router();
 
 // 👉 Login to get token
-router.post("/login", (req, res) => {
-  const { username } = req.body;
-  if (!username) return res.status(400).json({ message: "Username required" });
+router.post("/login", async (req, res) => {
+  try {
+    const { email } = req.body; // we’ll login with email
+    if (!email) {
+      return res.status(400).json({ message: "Email required" });
+    }
 
-  const token = jwt.sign({ username }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+    // Find user by email in DB
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  res.json({ token });
+    // Sign JWT with DB values
+    const token = jwt.sign(
+      { id: user._id, name: user.name, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ message: "Login failed", error: err.message });
+  }
 });
-
 // 👉 Create user (Protected)
 router.post("/users", async (req, res) => {
   try {
